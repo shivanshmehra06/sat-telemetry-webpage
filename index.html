@@ -8,10 +8,12 @@
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
 <body>
+
   <div class="container">
     <h2>Satellite Telemetry Dashboard</h2>
     <select id="signal-select" multiple></select>
     <div id="plot"></div>
+    <div class="footer">Data is loaded from <code>data/sat_log.csv</code></div>
   </div>
 
   <script>
@@ -66,5 +68,6 @@
       })
       .catch(err => console.error('Error loading CSV', err));
   </script>
+  
 </body>
 </html>
