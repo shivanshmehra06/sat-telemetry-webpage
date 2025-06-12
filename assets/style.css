@@ -1,97 +1,97 @@
-/* Global styles */
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
 
-body {
-  margin: 0;
-  padding: 0;
-  font-family: 'Roboto', sans-serif;
-  background: linear-gradient(135deg, #eceff1, #f9f9fb);
-  color: #333;
+:root {
+  --bg-light: #f4f7f9;
+  --bg-dark: #1f1f23;
+  --card-light: #fff;
+  --card-dark: #2a2a2f;
+  --text-light: #333;
+  --text-dark: #ccc;
+  --accent: #007bff;
 }
 
-/* Centered wrapper using Flexbox */
+body {
+  font-family: 'Roboto', sans-serif;
+  margin: 0;
+  padding: 20px;
+  background: var(--bg-light);
+  color: var(--text-light);
+  transition: background 0.3s, color 0.3s;
+}
+
+body.dark {
+  background: var(--bg-dark);
+  color: var(--text-dark);
+}
+
 .container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 30px;
-  gap: 25px;
+  padding: 20px;
+  gap: 20px;
   max-width: 900px;
   margin: auto;
 }
 
-/* Header style */
 h2 {
   font-weight: 500;
-  font-size: 2rem;
+  text-align: center;
   margin: 0;
 }
 
-/* Card-style section for controls and plot */
 .card {
-  background: #fff;
+  background: var(--card-light);
   border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   padding: 20px;
   width: 100%;
-  max-width: 800px;
+  transition: background 0.3s, box-shadow 0.3s;
 }
 
-/* Multi-select dropdown inside styled card */
+body.dark .card {
+  background: var(--card-dark);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.6);
+}
+
 #signal-select {
   width: 100%;
   padding: 10px;
   font-size: 1rem;
-  border: 1px solid #ccc;
+  border: 1px solid #aaa;
   border-radius: 6px;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  background: inherit;
+  color: inherit;
+  transition: border-color 0.3s, box-shadow 0.3s;
 }
 #signal-select:focus {
   outline: none;
-  border-color: #007bff;
+  border-color: var(--accent);
   box-shadow: 0 0 6px rgba(0,123,255,0.4);
 }
 
-/* Plot container */
 #plot {
-  height: 480px;
   width: 100%;
+  height: 480px;
 }
 
-/* Card footer note */
 .footer {
   font-size: 0.85rem;
-  color: #555;
-  text-align: center;
+  color: #666;
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  #plot {
-    height: 360px;
-  }
+.dark .footer {
+  color: #888;
 }
 
-/* Dark mode support */
-@media (prefers-color-scheme: dark) {
-  body {
-    background: #1f1f23;
-    color: #ccc;
-  }
-  .card {
-    background: #2a2a2f;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-  }
-  #signal-select {
-    background: #333;
-    color: #eee;
-    border: 1px solid #555;
-  }
-}
-
-
-/* Dark mode support example */
-@media (prefers-color-scheme: dark) {
-  body { background: #222; color: #ddd; }
-  #signal-select { background: #333; color: #ddd; border: 1px solid #555; }
+.toggle-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  padding: 8px;
+  background: var(--accent);
+  border: none;
+  color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
 }
