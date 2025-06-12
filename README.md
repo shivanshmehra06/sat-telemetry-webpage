@@ -7,7 +7,7 @@ A **static**, interactive telemetry dashboard built with **Plotly.js**—now enh
 ## 🌐 Live Demo
 
 See it in action:  
-https://<your-username>.github.io/sat-telemetry-webpage/
+(https://shivanshmehra06.github.io/sat-telemetry-webpage/)
 
 ---
 
