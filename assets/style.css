@@ -1,32 +1,68 @@
+/* Global styles */
 body {
+  margin: 0;
+  padding: 20px;
   font-family: 'Roboto', sans-serif;
-  margin: 20px;
-  background-color: #f9f9f9;
+  background: #f4f7f9;
   color: #333;
 }
 
-h2 {
-  text-align: center;
-  font-weight: 400;
-  margin-bottom: 20px;
-}
-
+/* Responsive container using Flexbox */
 .container {
-  width: 90%;
-  max-width: 800px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  max-width: 900px;
   margin: auto;
 }
 
-#signal-select {
-  width: 100%;
-  padding: 8px;
-  font-size: 1rem;
-  margin-bottom: 20px;
-  border: 1px solid #aaa;
-  border-radius: 4px;
+/* Heading style */
+h2 {
+  font-weight: 400;
+  text-align: center;
+  margin-bottom: 0;
 }
 
+/* Dropdown styling */
+#signal-select {
+  width: 100%;
+  max-width: 300px;
+  padding: 10px;
+  font-size: 1rem;
+  border-radius: 6px;
+  border: 1px solid #bbb;
+  background: #fff;
+  transition: border-color 0.3s ease;
+}
+#signal-select:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 4px rgba(0, 123, 255, 0.5);
+}
+
+/* Plot container using Grid layout */
 #plot {
+  display: grid;
   width: 100%;
   height: 500px;
+}
+
+/* Footer area for future controls */
+.footer {
+  text-align: center;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+/* Ensure responsive behavior */
+@media (max-width: 768px) {
+  #plot { height: 400px; }
+  #signal-select { max-width: 100%; }
+}
+
+/* Dark mode support example */
+@media (prefers-color-scheme: dark) {
+  body { background: #222; color: #ddd; }
+  #signal-select { background: #333; color: #ddd; border: 1px solid #555; }
 }
