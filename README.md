@@ -20,3 +20,5 @@ sat-telemetry-webpage/
 │ └── sat_log.csv # CSV telemetry data (timestamp, altitude, battery, temperature)
 └── README.md # This documentation file
 
+🏷️ License
+This project is licensed under the MIT License—see LIC
