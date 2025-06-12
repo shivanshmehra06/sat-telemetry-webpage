@@ -1,0 +1,48 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Satellite Telemetry Dashboard</title>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+  <h2>Satellite Telemetry Dashboard</h2>
+  <div>
+    <select id="signal-select"></select>
+  </div>
+  <div id="plot"></div>
+  <script>
+    fetch('data/sat_log.csv')
+      .then(r => r.text())
+      .then(text => {
+        const lines = text.trim().split('\n');
+        const signals = lines[0].split(',').slice(1);
+        const rows = lines.slice(1).map(r => r.split(','));
+        const timestamps = rows.map(r => r[0]);
+        const data = signals.map((s,i) => rows.map(r => +r[i+1]));
+
+        const sel = document.getElementById('signal-select');
+        signals.forEach((s,i) => {
+          const o = document.createElement('option');
+          o.value=i; o.text=s;
+          sel.add(o);
+        });
+
+        function draw(idx) {
+          Plotly.newPlot('plot', [{
+            x: timestamps,
+            y: data[idx],
+            mode: 'lines',
+            type: 'scatter'
+          }], {
+            title: signals[idx],
+            xaxis: { rangeslider: {} }
+          }, {responsive: true});
+        }
+
+        sel.addEventListener('change', e => draw(+e.target.value));
+        draw(0);
+      });
+  </script>
+</body>
+</html>
