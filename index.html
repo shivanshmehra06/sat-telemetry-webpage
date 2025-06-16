@@ -1,34 +1,90 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="utf-8">
   <title>Satellite Telemetry Dashboard</title>
-  <link href="assets/style.css" rel="stylesheet">
+  <!-- Google Fonts & Plotly -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
-  <button class="toggle-btn" id="theme-btn">🌙</button>
+  <button id="theme-toggle" class="toggle-btn">🌙</button>
+
   <div class="container">
     <h2>🚀 Satellite Telemetry Dashboard</h2>
+
     <div class="card">
       <label for="signal-select">Select Signals:</label>
       <select id="signal-select" multiple></select>
     </div>
+
     <div class="card">
       <div id="plot"></div>
     </div>
+
     <div class="footer">Data from <code>data/sat_log.csv</code></div>
   </div>
 
   <script>
-    // Theme toggle
-    const btn = document.getElementById('theme-btn');
-    btn.onclick = () => {
-      document.body.classList.toggle('dark');
-      btn.textContent = document.body.classList.contains('dark') ? '☀️' : '🌙';
-    }
+    // Theme toggle with class toggle method :contentReference[oaicite:0]{index=0}
+    const toggle = document.getElementById('theme-toggle');
+    toggle.onclick = () => {
+      document.documentElement.dataset.theme =
+        document.documentElement.dataset.theme === 'light'
+          ? 'dark'
+          : 'light';
+      toggle.textContent = document.documentElement.dataset.theme === 'light' ? '🌙' : '☀️';
+    };
 
-    // Plotting logic remains same...
+    // Telemetry plotting logic
+    fetch('data/sat_log.csv').then(r => r.text()).then(text => {
+      const lines = text.trim().split('\n');
+      const signals = lines[0].split(',').slice(1);
+      const rows = lines.slice(1).map(r => r.split(','));
+      const timestamps = rows.map(r => r[0]);
+      const data = signals.map((s, i) => rows.map(r => +r[i + 1]));
+
+      const sel = document.getElementById('signal-select');
+      signals.forEach((s, i) => sel.add(new Option(s, i)));
+      sel.multiple = true;
+
+      const layout = {
+        xaxis: {
+          rangeslider: {},
+          rangeselector: {
+            buttons: [
+              { step: 'hour', stepmode: 'backward', count: 1, label: '1h' },
+              { step: 'day', stepmode: 'backward', count: 1, label: '1d' },
+              { step: 'all' }
+            ]
+          }
+        },
+        yaxis: { title: 'Value' },
+        legend: { orientation: 'h' }
+      };
+
+      function plotMulti(idxs) {
+        const traces = idxs.map(i => ({
+          x: timestamps,
+          y: data[i],
+          type: 'scatter',
+          mode: 'lines',
+          name: signals[i]
+        }));
+        Plotly.newPlot('plot', traces, layout, { responsive: true });
+      }
+
+      sel.addEventListener('change', () => {
+        const idxs = [...sel.selectedOptions].map(o => +o.value);
+        plotMulti(idxs.length ? idxs : [0]);
+      });
+
+      sel.selectedIndex = 0;
+      plotMulti([0]);
+    }).catch(err => console.error('Error loading CSV', err));
   </script>
 </body>
 </html>
+
