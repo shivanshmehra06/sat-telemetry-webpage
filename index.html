@@ -3,10 +3,10 @@
 <head>
   <meta charset="utf-8">
   <title>Satellite Telemetry Dashboard</title>
-  <!-- Google Fonts & Plotly -->
+
+  <!-- Styles & Plotly.js -->
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-  <!-- Custom Styles -->
   <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
@@ -28,29 +28,45 @@
   </div>
 
   <script>
-    // Theme toggle with class toggle method :contentReference[oaicite:0]{index=0}
+    // DOM elements
     const toggle = document.getElementById('theme-toggle');
+    const sel = document.getElementById('signal-select');
+
+    // Toggle light/dark theme
     toggle.onclick = () => {
-      document.documentElement.dataset.theme =
-        document.documentElement.dataset.theme === 'light'
-          ? 'dark'
-          : 'light';
-      toggle.textContent = document.documentElement.dataset.theme === 'light' ? '🌙' : '☀️';
+      const theme = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', theme);
+      toggle.textContent = theme === 'light' ? '🌙' : '☀️';
+      // Re-generate chart with updated template
+      const idxs = [...sel.selectedOptions].map(o => +o.value) || [0];
+      plotMulti(idxs);
     };
 
-    // Telemetry plotting logic
+    // Fetch CSV & setup chart
+    let timestamps, signals, data;
     fetch('data/sat_log.csv').then(r => r.text()).then(text => {
       const lines = text.trim().split('\n');
-      const signals = lines[0].split(',').slice(1);
+      signals = lines[0].split(',').slice(1);
       const rows = lines.slice(1).map(r => r.split(','));
-      const timestamps = rows.map(r => r[0]);
-      const data = signals.map((s, i) => rows.map(r => +r[i + 1]));
+      timestamps = rows.map(r => r[0]);
+      data = signals.map((_, i) => rows.map(r => +r[i+1]));
 
-      const sel = document.getElementById('signal-select');
       signals.forEach((s, i) => sel.add(new Option(s, i)));
       sel.multiple = true;
 
-      const layout = {
+      sel.addEventListener('change', () => {
+        const idxs = [...sel.selectedOptions].map(o => +o.value);
+        plotMulti(idxs.length ? idxs : [0]);
+      });
+
+      sel.selectedIndex = 0;
+      plotMulti([0]);
+    }).catch(console.error);
+
+    function createLayout() {
+      const theme = document.documentElement.getAttribute('data-theme');
+      return {
+        template: theme === 'dark' ? 'plotly_dark' : 'plotly',
         xaxis: {
           rangeslider: {},
           rangeselector: {
@@ -64,27 +80,20 @@
         yaxis: { title: 'Value' },
         legend: { orientation: 'h' }
       };
+    }
 
-      function plotMulti(idxs) {
-        const traces = idxs.map(i => ({
-          x: timestamps,
-          y: data[i],
-          type: 'scatter',
-          mode: 'lines',
-          name: signals[i]
-        }));
-        Plotly.newPlot('plot', traces, layout, { responsive: true });
-      }
-
-      sel.addEventListener('change', () => {
-        const idxs = [...sel.selectedOptions].map(o => +o.value);
-        plotMulti(idxs.length ? idxs : [0]);
-      });
-
-      sel.selectedIndex = 0;
-      plotMulti([0]);
-    }).catch(err => console.error('Error loading CSV', err));
+    function plotMulti(idxs) {
+      const traces = idxs.map(i => ({
+        x: timestamps,
+        y: data[i],
+        type: 'scatter',
+        mode: 'lines',
+        name: signals[i]
+      }));
+      Plotly.newPlot('plot', traces, createLayout(), { responsive: true });
+    }
   </script>
 </body>
 </html>
+
 
